@@ -1,0 +1,52 @@
+.tudo {
+	max-width: 800px;
+	margin: 0 auto;
+	background: #067791;
+	border: solid 1px;
+}
+
+h1 {
+	text-align: center;
+	border: solid 1px;
+}
+
+#menu {
+	background: #067791;
+	height: 20px;
+	margin: 0;
+	padding: 0;
+	margin-left: 300px;
+}
+
+#menu ul {
+	margin: 0;
+	padding: 0;
+	margin-left: 6px;
+}
+
+#menu ul li {
+	display: inline;
+}
+
+#menu ul li a {
+	background: #444;
+	color: #FFF;
+	border: 1px #0C0372 solid;
+	border-bottom: 1px #000 solid;
+	float: left;
+	padding: 5px 7px;
+	margin: 2px;
+	text-decoration: none;
+}
+
+#menu ul li a:hover {
+	background: #FFF;
+	color: #000000;
+	border: #0C0372 1px solid;
+	border-bottom: none;
+	text-decoration: none;
+}
+
+.busca {
+	margin: 0 2% 2% 0;
+}
