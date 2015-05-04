@@ -1,11 +1,11 @@
 package controller;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,29 +17,30 @@ import javax.servlet.http.HttpServletResponse;
 public class Query extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	Scanner scanner;
-	String cidades;
-	ArrayList<String> cid = new ArrayList<String>();
-
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		
-		
+
+		Connection con = new ConexaoJDBC().getConnection();
+		System.out.println("Aberto");
+
 		String q = request.getParameter("parametro");
 
-		try {
-			scanner = new Scanner(
-					new FileReader(
-							"/Users/Usu·rio/workspace/ExServlets/WebContent/resources/arquivotexto/frutas.txt"));
-			while (scanner.hasNextLine()) {
-				cidades = scanner.nextLine();
-				if (cidades.startsWith(q)) {
-					cid.add(cidades);
-				}
-			}
+		PreparedStatement ps = null;
 
-		} catch (FileNotFoundException e) {
+		ResultSet rs = null;
+
+		try {
+			ps = con.prepareStatement("SELECT nome FROM cidades WHERE nome LIKE '"
+					+ q + "%'");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		try {
+			rs = ps.executeQuery();
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
@@ -49,7 +50,7 @@ public class Query extends HttpServlet {
 		out.println("<html>");
 		out.println("<head>");
 		out.println("<meta charset=\"UTF-8\"></meta>");
-		out.println("<title>Formul·rio de Busca</title>");
+		out.println("<title>Formul√°rio de Busca</title>");
 		out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"./resources/css/estilo.css\" />");
 		out.println("</head>");
 		out.println("<body>");
@@ -59,21 +60,31 @@ public class Query extends HttpServlet {
 		out.println("<li><a href=\"servletA\">A</a></li>");
 		out.println("<li><a href=\"servletB\">B</a></li>");
 		out.println("<li><a href=\"servletC\">C</a></li>");
+		out.println("<li><a href=\"inserir\">Inserir</a></li>");
 		out.println("<li><a href=\"busca\">Busca</a></li>");
 		out.println("</ul>");
 		out.println("</div>");
-		out.println("<h1>Cidades que comeÁam com " + q + "</h1>");
+		out.println("<h1>Cidades que come√ßam com " + q + "</h1>");
 		out.println("<ul>");
-		for (int i = 0; i < this.cid.size(); i++) {
-			out.println("<li>");
-			out.println(this.cid.get(i));
-			out.println("</li>");
+		try {
+			while (rs.next()) {
+				out.println("<li>");
+				out.println(rs.getString("nome"));
+				out.println("</li>");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-		this.cid.clear();
 		out.println("</ul>");
 		out.println("</body>");
 		out.println("</html>");
+
+		try {
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

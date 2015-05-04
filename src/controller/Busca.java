@@ -28,7 +28,7 @@ public class Busca extends HttpServlet {
 		out.println("<html>");
 		out.println("<head>");
 		out.println("<meta charset=\"UTF-8\"></meta>");
-		out.println("<title>Formulário de Busca</title>");
+		out.println("<title>Formulï¿½rio de Busca</title>");
 		out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"./resources/css/estilo.css\" />");
 		out.println("</head>");
 		out.println("<body>");
@@ -38,6 +38,7 @@ public class Busca extends HttpServlet {
 		out.println("<li><a href=\"servletA\">A</a></li>");
 		out.println("<li><a href=\"servletB\">B</a></li>");
 		out.println("<li><a href=\"servletC\">C</a></li>");
+		out.println("<li><a href=\"inserir\">Inserir</a></li>");
 		out.println("<li><a href=\"busca\">Busca</a></li>");
 		out.println("</ul>");
 		out.println("</div>");

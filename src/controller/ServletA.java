@@ -1,11 +1,11 @@
 package controller;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -18,32 +18,32 @@ import javax.servlet.http.HttpServletResponse;
 public class ServletA extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	Scanner scanner;
-	String cidades;
-	ArrayList<String> cidadesA = new ArrayList<String>();
-
 	@Override
 	public void init(ServletConfig config) throws ServletException {
-		try {
-			scanner = new Scanner(
-					new FileReader(
-							"/Users/Usuário/workspace/ExServlets/WebContent/resources/arquivotexto/frutas.txt"));
-			while (scanner.hasNextLine()) {
-				cidades = scanner.nextLine();
-				if (cidades.startsWith("A")) {
-					cidadesA.add(cidades);
-				}
-			}
-
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
 	}
 
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+
+		Connection con = new ConexaoJDBC().getConnection();
+		System.out.println("Aberto");
+
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = con.prepareStatement("SELECT nome FROM cidades WHERE nome LIKE 'A%' ");
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		try {
+			rs = ps.executeQuery();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 
 		PrintWriter out = response.getWriter();
 
@@ -61,20 +61,32 @@ public class ServletA extends HttpServlet {
 		out.println("<li><a href=\"servletA\">A</a></li>");
 		out.println("<li><a href=\"servletB\">B</a></li>");
 		out.println("<li><a href=\"servletC\">C</a></li>");
+		out.println("<li><a href=\"inserir\">Inserir</a></li>");
 		out.println("<li><a href=\"busca\">Busca</a></li>");
 		out.println("</ul>");
 		out.println("</div>");
 		out.println("<h1>Cidades com <img src=\"./resources/img/A.png\" alt=\"Letra A\" height=\"42\" width=\"42\"></h1>");
 		out.println("<ul>");
-		for (int i = 0; i < this.cidadesA.size(); i++) {
-			out.println("<li>");
-			out.println(this.cidadesA.get(i));
-			out.println("</li>");
+		try {
+			while (rs.next()) {
+				out.println("<li>");
+				out.println(rs.getString("nome"));
+				out.println("</li>");
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		out.println("</ul>");
 		out.println("</div>");
 		out.println("</body>");
 		out.println("</html>");
+
+		try {
+			con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
