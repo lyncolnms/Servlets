@@ -10,23 +10,23 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-@WebServlet("/inserir")
-public class Insert extends HttpServlet {
+@WebServlet("/editar")
+public class Editar extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 
 		if (session.getAttribute("logado") != null) {
+
 			PrintWriter out = response.getWriter();
 
 			out.println("<!DOCTYPE html>");
 			out.println("<html>");
 			out.println("<head>");
 			out.println("<meta charset=\"UTF-8\"></meta>");
-			out.println("<title>Formul�rio de Inserção</title>");
+			out.println("<title>EDIÇÃO</title>");
 			out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"./resources/css/estilo.css\" />");
 			out.println("</head>");
 			out.println("<body>");
@@ -40,13 +40,17 @@ public class Insert extends HttpServlet {
 			out.println("<li><a href=\"busca\">Busca</a></li>");
 			out.println("</ul>");
 			out.println("</div>");
-			out.println("<h1>Inserir</h1>");
+			out.println("<h1>Editar</h1>");
 			out.println("<div class=\"inserir\">"
-					+ "<form action =\"./insert\" method=\"post\" accept-charset=\"utf-8\">"
+					+ "<form action =\"./update\" method=\"post\" accept-charset=\"utf-8\">"
 					+ "<label id=\"cidade\">Cidade:</label> "
-					+ "<input for=\"cidade\" type=\"text\" name=\"cidade\"> </br:"
+					+ "<input for=\"cidade\" type=\"text\" name=\"cidade\" value=\""
+					+ request.getParameter("cidade")
+					+ "\"> </br:"
 					+ "<label id=\"estado\">Estado:</label> "
-					+ "<select name=\"estado\">"
+					+ "<select name=\"estado\" value=\""
+					+ request.getParameter("estado")
+					+ "\">"
 					+ "<option value=\"Paraná\">Parana</option>"
 					+ "<option value=\"Santa Catarina\">Santa Catarina</option>"
 					+ "<option value=\"São Paulo\">Sao Paulo</option>"
@@ -58,13 +62,10 @@ public class Insert extends HttpServlet {
 		} else {
 			response.sendRedirect("./login");
 		}
-
 	}
 
-	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-
 	}
 
 }

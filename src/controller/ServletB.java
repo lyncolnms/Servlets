@@ -13,6 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 @WebServlet("/servletB")
 public class ServletB extends HttpServlet {
@@ -25,68 +26,58 @@ public class ServletB extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession();
 
-		Connection con = new ConexaoJDBC().getConnection();
-		System.out.println("Aberto");
+		if (session.getAttribute("logado") != null) {
+			Connection con = new ConexaoJDBC().getConnection();
 
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try {
-			ps = con.prepareStatement("SELECT nome FROM cidades WHERE nome LIKE 'B%' ");
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+			PreparedStatement ps = null;
+			ResultSet rs = null;
+			try {
+				ps = con.prepareStatement("SELECT * FROM cidades WHERE nome LIKE 'B%' ");
+				rs = ps.executeQuery();
 
-		try {
-			rs = ps.executeQuery();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+				PrintWriter out = response.getWriter();
 
-		PrintWriter out = response.getWriter();
+				out.println("<!DOCTYPE html>");
+				out.println("<html>");
+				out.println("<head>");
+				out.println("<meta charset=\"UTF-8\"></meta>");
+				out.println("<title>Cidades com B</title>");
+				out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"./resources/css/estilo.css\" />");
+				out.println("</head>");
+				out.println("<body>");
+				out.println("<div class=\"tudo\">");
+				out.println("<div id=\"menu\">");
+				out.println("<ul>");
+				out.println("<li><a href=\"servletA\">A</a></li>");
+				out.println("<li><a href=\"servletB\">B</a></li>");
+				out.println("<li><a href=\"servletC\">C</a></li>");
+				out.println("<li><a href=\"inserir\">Inserir</a></li>");
+				out.println("<li><a href=\"busca\">Busca</a></li>");
+				out.println("</ul>");
+				out.println("</div>");
+				out.println("<h1>Cidades com <img src=\"./resources/img/B.png\" alt=\"Letra B\" height=\"42\" width=\"42\"></h1>");
+				out.println("<ul>");
+				while (rs.next()) {
+					out.println("<li>");
+					out.println(rs.getString("nome")
+							+ " [<a href=\"./editar?id=" + rs.getString("id")
+							+ "&cidade=" + rs.getString("nome") + "&estado="
+							+ rs.getString("estado") + "\">editar</a>]");
+					out.println("</li>");
+				}
+				out.println("</ul>");
+				out.println("</div>");
+				out.println("</body>");
+				out.println("</html>");
 
-		out.println("<!DOCTYPE html>");
-		out.println("<html>");
-		out.println("<head>");
-		out.println("<meta charset=\"UTF-8\"></meta>");
-		out.println("<title>Cidades com B</title>");
-		out.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"./resources/css/estilo.css\" />");
-		out.println("</head>");
-		out.println("<body>");
-		out.println("<div class=\"tudo\">");
-		out.println("<div id=\"menu\">");
-		out.println("<ul>");
-		out.println("<li><a href=\"servletA\">A</a></li>");
-		out.println("<li><a href=\"servletB\">B</a></li>");
-		out.println("<li><a href=\"servletC\">C</a></li>");
-		out.println("<li><a href=\"inserir\">Inserir</a></li>");
-		out.println("<li><a href=\"busca\">Busca</a></li>");
-		out.println("</ul>");
-		out.println("</div>");
-		out.println("<h1>Cidades com <img src=\"./resources/img/B.png\" alt=\"Letra B\" height=\"42\" width=\"42\"></h1>");
-		out.println("<ul>");
-		try {
-			while (rs.next()) {
-				out.println("<li>");
-				out.println(rs.getString("nome"));
-				out.println("</li>");
+				con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		out.println("</ul>");
-		out.println("</div>");
-		out.println("</body>");
-		out.println("</html>");
-
-		try {
-			con.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} else {
+			response.sendRedirect("./login");
 		}
 	}
 
